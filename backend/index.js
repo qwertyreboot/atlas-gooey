@@ -50,6 +50,7 @@ https
     {
       key: fs.readFileSync(process.env.SSL_KEY_PATH),
       cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+      ca: fs.readFileSync(process.env.SSL_CA_PATH),
     },
     app
   )
