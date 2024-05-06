@@ -1,23 +1,23 @@
 import { createRef, useEffect, useState } from "react";
-import Upload from "../utilities/upload.component";
+import Upload from "../utilities/file-select.component";
 import Result from "../utilities/result.component";
 
 export default function Home() {
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const resultRef = createRef();
 
   useEffect(() => {
-    if (uploadedFile) {
+    if (selectedFile) {
       resultRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [uploadedFile, resultRef]);
+  }, [selectedFile, resultRef]);
 
   return (
     <>
-      <Upload onUploadSuccess={setUploadedFile} />
-      {uploadedFile && (
+      <Upload onSelect={setSelectedFile} file={selectedFile} />
+      {selectedFile && (
         <div ref={resultRef}>
-          <Result originalImage={uploadedFile} />
+          <Result originalImage={selectedFile} />
         </div>
       )}
     </>

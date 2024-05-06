@@ -1,14 +1,10 @@
 import { useState } from "react";
 import Frame from "../images/Frame.svg";
-import { SERVER_URL } from "../../constants/common.constant";
-import Button from "./button.component";
 import PropType from "prop-types";
 import { toast } from "react-toastify";
 
-export default function Upload({ onUploadSuccess }) {
+export default function FileSelect({ onSelect, file }) {
   const [dragging, setDragging] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   const ALLOWED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg"];
 
@@ -16,30 +12,10 @@ export default function Upload({ onUploadSuccess }) {
     const isValidFile = ALLOWED_FILE_TYPES.includes(file.type);
 
     if (isValidFile) {
-      setSelectedFile(file);
+      onSelect(file);
     } else {
       toast.error("Invalid file type. Please upload a PNG, JPG, or JPEG file.");
     }
-  };
-
-  const uploadFile = async (file) => {
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch(`${SERVER_URL}/image/upload`, {
-      method: "POST",
-      body: formData,
-    });
-    setIsUploading(false);
-
-    if (!response.ok) {
-      toast.error("Upload failed. Please try again.");
-      return;
-    }
-
-    const data = await response.json();
-    onUploadSuccess(data?.data);
   };
 
   const dragAreaStyle = {
@@ -104,7 +80,7 @@ export default function Upload({ onUploadSuccess }) {
                 style={dragAreaStyle}
               >
                 <div className="w-full p-10 rounded-xl border-4 border-gray-300 border-dashed text-center">
-                  {!selectedFile && (
+                  {!file && (
                     <div className="mb-5 max-w-48 mx-auto flex justify-center items-center">
                       <img src={Frame} alt="Frame" className="max-w-full" />
                     </div>
@@ -112,7 +88,7 @@ export default function Upload({ onUploadSuccess }) {
 
                   <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                     <span className="font-semibold">
-                      {selectedFile ? "" : "Drag and drop an image or Browse"}
+                      {file ? "" : "Drag and drop an image or Browse"}
                     </span>
                   </p>
 
@@ -125,10 +101,10 @@ export default function Upload({ onUploadSuccess }) {
                   />
                   <div className="flex">
                     <div className="w-full">
-                      {selectedFile && (
+                      {file && (
                         <div className="mb-5 max-w-96 mx-auto flex justify-center items-center">
                           <img
-                            src={URL.createObjectURL(selectedFile)}
+                            src={URL.createObjectURL(file)}
                             alt="Original Image"
                             className="max-w-full rounded"
                           />
@@ -150,19 +126,10 @@ export default function Upload({ onUploadSuccess }) {
                     <div className="flex items-center justify-center w-full gap-x-4 max-sm:flex-col">
                       <label
                         htmlFor="file-upload"
-                        className="mt-4 bg-black hover:opacity-80 text-white rounded px-4 py-2 cursor-pointer truncate w-full"
+                        className="mt-4 max-w-60 bg-black hover:opacity-80 text-white rounded px-4 py-2 cursor-pointer truncate w-full"
                       >
-                        {selectedFile ? "Change Image" : "Select an Image"}
+                        {file ? "Change Image" : "Select an Image"}
                       </label>
-                      {selectedFile && (
-                        <Button
-                          loading={isUploading}
-                          onClick={() => uploadFile(selectedFile)}
-                          className="mt-4 bg-pink-600 hover:opacity-80 w-full"
-                        >
-                          Upload Image
-                        </Button>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -175,6 +142,7 @@ export default function Upload({ onUploadSuccess }) {
   );
 }
 
-Upload.propTypes = {
-  onUploadSuccess: PropType.func.isRequired,
+FileSelect.propTypes = {
+  file: PropType.object,
+  onSelect: PropType.func.isRequired,
 };
