@@ -38,12 +38,12 @@ class Service {
 
         try {
             return Promise.resolve({
-                status: StatusCode.post.ok,
-                data: {
-                    mediaName: file.filename,
-                    origMediaName: file.originalname,
-                    mediaSource: `http://${host}/image/get/${file.filename}`
-                }
+              status: StatusCode.post.ok,
+              data: {
+                mediaName: file.filename,
+                origMediaName: file.originalname,
+                mediaSource: `https://${host}/image/get/${file.filename}`,
+              },
             });
         } catch (error) {
             return Promise.reject(error);

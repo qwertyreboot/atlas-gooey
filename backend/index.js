@@ -5,9 +5,10 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import Router from './router/router.js';
 import Logger from './handlers/logger.handler.js';
-import 'dotenv/config';
-import StatusCode from './constants/status-codes.constant.js';
+import "dotenv/config";
 import upload from './middleware/upload.js';
+import https from "https";
+import fs from "fs";
 const app = express();
 
 // Define the port
@@ -44,4 +45,14 @@ Object.keys(Router).forEach((method) => {
 });
 
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+https
+  .createServer(
+    {
+      key: fs.readFileSync(process.env.SSL_KEY_PATH),
+      cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+    },
+    app
+  )
+  .listen(port, () => {
+    Logger.log(`Server is listening on port ${port}`, "info");
+  });
